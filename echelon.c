@@ -134,14 +134,16 @@ echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
     printf("initial state of matrix\n");
     print_matrix(nrows, ncols, matrix);
 
+    int last_leading = -1; /* start off with an invalid leading pos */
+
     /* Go from a matrix to its echelon form */
     for (int i = 0; i < nrows; i++) {
         /* Is there a leading entry where we want it to be?
          * If not, try to swap with a row that has a leading entry in
          * that position. */
-        if (leading_pos(i, nrows, ncols, matrix) != i) {
+        if (leading_pos(i, nrows, ncols, matrix) <= last_leading) {
             for (int k = i+1; k < nrows; k++) {
-                if (leading_pos(k, nrows, ncols, matrix) == i) {
+                if (leading_pos(k, nrows, ncols, matrix) > last_leading) {
                     swap_rows(i, k, nrows, ncols, matrix);
                     print_matrix(nrows, ncols, matrix);
                     break; // immediately stop searching
@@ -154,25 +156,26 @@ echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
         int leading = leading_pos(i, nrows, ncols, matrix);
         if (leading == -1) {
             continue; // if no leading value, we better not try more stuff
-        } else if (leading != i) {
+        } else if (leading < last_leading) {
             fprintf(stderr, "Could not find a row to swap with.\n");
             exit(EXIT_FAILURE);
         }
 
         /* Now, try to scale the row so that the leading value is 1 */
-        if (matrix[i][i] != 1) {
-            double temp = matrix[i][i];
+        if (matrix[i][leading] != 1) {
+            double temp = matrix[i][leading];
             scale_row(i, 1/temp, nrows, ncols, matrix);
             print_matrix(nrows, ncols, matrix);
         }
 
         /* Use the newly scaled problem to cancel out that position elsewhere */
         for (int k = i+1; k < nrows; k++) {
-            double temp = -1 * matrix[k][i];
+            double temp = -1 * matrix[k][leading];
             add_scaled(k, i, temp, nrows, ncols, matrix);
             printf("add R%d + (%.2lf * R%d)\n", k+1, temp, i+1);
             print_matrix(nrows, ncols, matrix);
         }
+        last_leading = leading; // Update the most recent leading position
     }
 }
 
