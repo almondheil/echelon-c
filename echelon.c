@@ -16,13 +16,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <ctype.h>
+#include <errno.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <string.h>
 
 /******************************************************************************
  * Function Declarations (by usage)                                           *
  ******************************************************************************/
+
+/* reading values from files and stdin */
+void read_matrix_file (char * fname, int nrows, int ncols, double matrix[nrows][ncols]);
+void read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols]);
+void read_size_file (char * fname, int * nrows, int * ncols);
+void read_size_stdin (int * nrows, int * ncols);
 
 /* elementary row operations */
 void add_scaled (int row1, int row2, double scalar, int nrows, int ncols, double matrix[nrows][ncols]);
@@ -46,58 +55,27 @@ void print_matrix (int nrows, int ncols, double matrix[nrows][ncols]);
  * Prompt the user to enter a matrix and perform reduced echelon
  * calculations on it, printing out the results as you go.
  *
- * precondition: none  
+ * preconditions: arg is number of arguments
+ *                argv is a char * array of arguments
  * postcondition: returns exit status (0 on success)
  */
 int 
-main (void)
+main (int argc, char * argv[])
 {
-    /* Prompt the user for the size of the matrix */
     int nrows, ncols;
-    int numRead;
 
-    printf("This program will calculate the echelon form\n"
-           "of a matrix that you input.\n"
-           "First, enter the size of your matrix:\n");
-
-    printf("  number of rows : ");
-    numRead = scanf("%d", &nrows);
-    if (numRead == 0) {
-        fprintf(stderr, "Failed to read number of rows. Make sure it was an integer.\n");
-        return EXIT_FAILURE;
-    }
-
-    printf("  number of cols : ");
-    numRead = scanf("%d", &ncols);
-    if (numRead == 0) {
-        fprintf(stderr, "Failed to read number of rows. Make sure it was an integer.\n");
-        return EXIT_FAILURE;
-    }
+    /* TODO later, we will read size from file too */
+    read_size_stdin(&nrows, &ncols);
 
     /* Create a matrix with that many rows and columns */
     double matrix[nrows][ncols];
 
-    printf("Next, enter the matrix. Put spaces between columns, and press enter for each row.\n"
-           "Here is an example:\n"
-           "  3 4 5\n  6 7 8\n  1 9 0\n"
-           "Enter your matrix below.\n\n");
+    /* TODO later, we will read matrix from file too */
+    read_matrix_stdin(nrows, ncols, matrix);
 
-    /* Scan doubles into the array */
-    for (int i = 0; i < nrows; i++) {
-        for (int j = 0; j < ncols; j++) {
-            numRead = scanf("%lf", &matrix[i][j]);
-            if (numRead == 0) {
-                printf("Could not read a value.\n");
-                return EXIT_FAILURE;
-            }
-        }
-    }
-    printf("\n");
-
-    while (getchar() != '\n') // clear out buffer as we'll getchar() soon
-        ;
-
-    /* No matter what, do the first part of the calculation */
+    /* Do the first part of the calculation, then prompt whether
+     * they want to do the rest (unless they ran with -y)
+     */
     echelon_form(nrows, ncols, matrix);
 
     printf("Echelon form calculation completed.\n"
@@ -152,44 +130,48 @@ echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
 
     /* Go from a matrix to its echelon form */
     for (int i = 0; i < nrows; i++) {
-        /* Is there a leading entry where we want it to be?
-         * If not, try to swap with a row that has a leading entry in
-         * that position. */
-        if (leading_pos(i, nrows, ncols, matrix) <= last_leading) {
+        /* Make a best-effort attempt to get the leading value *just*
+         * one column right from the previous one */
+        int desired_leading = last_leading + 1;
+        int current_leading = leading_pos(i, nrows, ncols, matrix);
+        if (current_leading != desired_leading) {
+            /* Search for another row that DOES have the desired leading value */
             for (int k = i+1; k < nrows; k++) {
-                if (leading_pos(k, nrows, ncols, matrix) > last_leading) {
+                int k_leading = leading_pos(k, nrows, ncols, matrix);
+                if (k_leading < current_leading) {
                     swap_rows(i, k, nrows, ncols, matrix);
-                    print_matrix(nrows, ncols, matrix);
-                    break; // immediately stop searching
+                    current_leading = k_leading;
+                    // stop if we get a perfect match early
+                    if (k_leading == desired_leading)
+                        break;
                 }
             }
         }
 
         /* If we tried and failed to swap, raise an error. 
          * This shouldn't happen, because a column of all zeroes is redundant */
-        int leading = leading_pos(i, nrows, ncols, matrix);
-        if (leading == -1) {
+        if (current_leading == -1) {
             continue; // if no leading value, we better not try more stuff
-        } else if (leading < last_leading) {
+        } else if (current_leading < last_leading) {
             fprintf(stderr, "Could not find a row to swap with.\n");
             exit(EXIT_FAILURE);
         }
 
         /* Now, try to scale the row so that the leading value is 1 */
-        if (matrix[i][leading] != 1) {
-            double temp = matrix[i][leading];
+        if (matrix[i][current_leading] != 1) {
+            double temp = matrix[i][current_leading];
             scale_row(i, 1/temp, nrows, ncols, matrix);
             print_matrix(nrows, ncols, matrix);
         }
 
         /* Use the newly scaled problem to cancel out that position elsewhere */
         for (int k = i+1; k < nrows; k++) {
-            double temp = -1 * matrix[k][leading];
+            double temp = -1 * matrix[k][current_leading];
             add_scaled(k, i, temp, nrows, ncols, matrix);
             printf("add R%d + (%.2lf * R%d)\n", k+1, temp, i+1);
             print_matrix(nrows, ncols, matrix);
         }
-        last_leading = leading; // Update the most recent leading position
+        last_leading = current_leading; // Update the most recent leading position
     }
 }
 
@@ -211,7 +193,7 @@ leading_pos (int row, int nrows, int ncols, double matrix[nrows][ncols])
         if (matrix[row][j] != 0)
             return j;
     }
-    return -1; // not found
+    return -1; // leading value not found
 }
 
 
@@ -239,6 +221,142 @@ print_matrix (int nrows, int ncols, double matrix[nrows][ncols])
         printf("\n");
     }
     printf("\n");
+}
+
+
+/* read_matrix_file
+ *
+ * Read the values of an initialized matrix from a file.
+ *
+ * preconditions: fname is the name of a local file
+ *                nrows and ncols represent the size of matrix
+ *                matrix is a 2d array of doubles of that size
+ * postcondition: matrix will have values from the file added to it
+ */
+void
+read_matrix_file (char * fname, int nrows, int ncols, double matrix[nrows][ncols])
+{
+    printf("Function read_matrix_file not yet implemented.\n");
+}
+
+
+/* read_matrix_stdin
+ *
+ * Read the values of an initialized matrix from stdin.
+ *
+ * preconditions: nrows and ncols represent the size of matrix
+ *                matrix is a 2d array of doubles of that size
+ * postcondition: matrix will have user values added to it
+ */
+void
+read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols])
+{
+    int num_read;
+
+    printf("Next, enter the matrix. Put spaces between columns,\n"
+           "and press enter for each row.\n"
+           "Here is an example:\n\n"
+           "3 4 5\n6 7 8\n1 9 0\n\n"
+           "Enter your matrix below.\n\n");
+
+    /* Scan doubles into the array */
+    for (int i = 0; i < nrows; i++) {
+        for (int j = 0; j < ncols; j++) {
+            num_read = scanf("%lf", &matrix[i][j]);
+            if (num_read == 0) {
+                printf("Could not read a value.\n");
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+    while (getchar() != '\n') // clear out the buffer to be a good citizen 
+        ;
+
+    printf("\n"); // formatting before we go into the calculations
+}
+
+
+/* read_size_file 
+ *
+ * Given the name of a text file, attempt to read how many rows and columns are
+ * in the matrix it contains.
+ *
+ * preconditions: *nrows and *ncols are pointers to integers
+ *                fname is the name of a local file
+ * postcondition: the number of rows and cols in the file will be stored 
+ *                to *nrows and *ncols
+ */
+void
+read_size_file (char * fname, int * nrows, int * ncols)
+{
+    printf("Function read_size_file is not implemented yet.\n");
+    return; // remove this when you're ready to deal with the rest
+
+    /* Try to open the file, make sure we were able to */
+    FILE * file = fopen(fname, "r");
+    if (file == NULL) {
+        fprintf(stderr, "Error opening file %s: %s\n", fname, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+
+    /* Make sure to initialize them at zero. We're counting! */
+    *nrows = 0;
+    *ncols = 0;
+
+
+    char curr = 0; // current and last scanned chars
+    char last = 0;
+
+    /* Read until the end of the file */
+    char ch;
+    while ((ch = fgetc(file)) != EOF) {
+        /* Every number or space followed by a newline is a new row */
+        if (ch == '\n' && (isdigit(last) || isspace(last)))
+            *nrows++;
+        /* Every number followed by a space is a new col */
+        if (isspace(ch) && isdigit(last))
+            *ncols++;
+    }
+
+    /* Close the file again. All done! */
+    if (fclose(file)) {
+        fprintf(stderr, "Error closing file %s: %s\n", fname, strerror(errno));
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+/* read_size_stdin
+ *
+ * Prompt the user for how many rows and columns are in their matrix,
+ * and copy this to variables
+ *
+ * preconditions: *nrows and *ncols are pointers to integers
+ * postcondition: the number of rows and cols the user inputs will be
+ *                stored in *nrows and *ncols
+ */
+void
+read_size_stdin (int * nrows, int * ncols)
+{
+    int num_read;
+
+    printf("This program will calculate the echelon form\n"
+           "of a matrix that you input.\n"
+           "First, enter the size of your matrix:\n");
+
+    printf("Number of rows? ");
+    num_read = scanf("%d", nrows);
+    if (num_read == 0) {
+        fprintf(stderr, "Failed to read number of rows. Make sure it was an integer.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Number of columns? ");
+    num_read = scanf("%d", ncols);
+    if (num_read == 0) {
+        fprintf(stderr, "Failed to read number of rows. Make sure it was an integer.\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 
