@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAXSTRLEN 128
+
 /******************************************************************************
  * Function Declarations (by usage)                                           *
  ******************************************************************************/
@@ -50,6 +52,10 @@ void print_matrix (int nrows, int ncols, double matrix[nrows][ncols]);
  * Function Definitions (main, then alphabetical)                             *
  ******************************************************************************/
 
+bool auto_accept = false;      // do not prompt for reduced echelon form
+bool from_file = false;        // read from a file
+char target_file[MAXSTRLEN+1]; // filename we want to read from
+
 /* main
  *
  * Prompt the user to enter a matrix and perform reduced echelon
@@ -62,6 +68,32 @@ void print_matrix (int nrows, int ncols, double matrix[nrows][ncols]);
 int 
 main (int argc, char * argv[])
 {
+    /* Parse arguments */
+    for (int i = 0; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            for (int j = 1; argv[i][j] != 0; j++) {
+                switch (argv[i][j]) {
+                    case 'y': 
+                        auto_accept = true;
+                        break;
+                    case 'f':
+                        from_file = true;
+                        // If a filename is not provided yell at them
+                        if (i == argc-1 || argv[i+1][0] == '-') {
+                            fprintf(stderr, "Usage: %s -f <filename>\n", argv[0]);
+                            return EXIT_FAILURE;
+                        }
+                        strncpy(target_file, argv[i+1], MAXSTRLEN);
+                        break;
+                    default:
+                        fprintf(stderr, "Unknown option: -%c\n", argv[i][j]);
+                        return EXIT_FAILURE;
+                        break;
+                } // switch
+            } // for argv[i][j] 
+        } // if argv[i][0]
+    } // for i < argc
+
     int nrows, ncols;
 
     /* TODO later, we will read size from file too */
@@ -78,11 +110,16 @@ main (int argc, char * argv[])
      */
     echelon_form(nrows, ncols, matrix);
 
-    printf("Echelon form calculation completed.\n"
-           "Want to go to the reduced echelon form? [Y/n]: ");
-    char ch = tolower(getchar());
-    if (ch != 'n') {
-        printf("\n");
+    if (!auto_accept) {
+        printf("Echelon form calculation completed.\n"
+                "Want to go to the reduced echelon form? [Y/n]: ");
+        char ch = tolower(getchar());
+        if (ch != 'n') {
+            printf("\n");
+            reduced_echelon_form(nrows, ncols, matrix);
+            printf("Reduced echelon form calculation completed.\n");
+        }
+    } else {
         reduced_echelon_form(nrows, ncols, matrix);
         printf("Reduced echelon form calculation completed.\n");
     }
@@ -382,9 +419,11 @@ void reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
         /* Subtract from every previous row */
         for (int k = i-1; k >= 0; k--) {
             double temp = -1 * matrix[k][lead] / matrix[i][lead]; 
-            add_scaled(k, i, temp, nrows, ncols, matrix);
-            printf("add R%d + (%.2lf * R%d)\n", k+1, temp, i+1);
-            print_matrix(nrows, ncols, matrix);
+            if (temp != 0) {
+                add_scaled(k, i, temp, nrows, ncols, matrix);
+                printf("add R%d + (%.2lf * R%d)\n", k+1, temp, i+1);
+                print_matrix(nrows, ncols, matrix);
+            }
         }
     }
 }
