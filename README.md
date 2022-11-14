@@ -7,7 +7,7 @@ A simple echelon form calculator. Nice for Linear Algebra homework!
 I made this as a toy and experiment as much as for solving actual problems, and
 I make no guarantee that it actually works outside of the situations I've run
 into on homework. As I write this section of the README, I ran into a silly bug
-no less than half an hour ago and had ti fix it.
+no less than half an hour ago and had to fix it.
 
 ## Compiling 
 
