@@ -20,14 +20,26 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+/******************************************************************************
+ * Function Declarations (by usage)                                           *
+ ******************************************************************************/
+
+/* elementary row operations */
 void add_scaled (int row1, int row2, double scalar, int nrows, int ncols, double matrix[nrows][ncols]);
+void scale_row (int row, double scalar, int nrows, int ncols, double matrix[nrows][ncols]);
+void swap_rows (int row1, int row2, int nrows, int ncols, double matrix[nrows][ncols]);
+
+/* automatic calculations */
 void echelon_form (int nrows, int ncols, double matrix[nrows][ncols]);
+void reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols]);
+
+/* matrix utilities */
 int leading_pos (int row, int nrows, int ncols, double matrix[nrows][ncols]);
 void print_matrix (int nrows, int ncols, double matrix[nrows][ncols]);
-void reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols]);
-void swap_rows (int row1, int row2, int nrows, int ncols, double matrix[nrows][ncols]);
-void scale_row (int row, double scalar, int nrows, int ncols, double matrix[nrows][ncols]);
 
+/******************************************************************************
+ * Function Definitions (main, then alphabetical)                             *
+ ******************************************************************************/
 
 /* main
  *
@@ -101,6 +113,7 @@ main (void)
     return EXIT_SUCCESS;
 }
 
+
 /* add_scaled
  *
  * Add a scaled version of row2 to row1, modifying the values in row1.
@@ -118,6 +131,7 @@ add_scaled (int row1, int row2, double scalar, int nrows, int ncols, double matr
         matrix[row1][j] = matrix[row1][j] + (scalar * matrix[row2][j]);
     }
 }
+
 
 /* echelon_form
  *
@@ -179,6 +193,7 @@ echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
     }
 }
 
+
 /* leading_pos
  *
  * Locate the leading entry in a row and return what column it is in.
@@ -198,6 +213,7 @@ leading_pos (int row, int nrows, int ncols, double matrix[nrows][ncols])
     }
     return -1; // not found
 }
+
 
 /* print_matrix
  *
@@ -224,6 +240,7 @@ print_matrix (int nrows, int ncols, double matrix[nrows][ncols])
     }
     printf("\n");
 }
+
 
 /* reduced_echelon_form
  *
@@ -254,25 +271,6 @@ void reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
     }
 }
 
-/* swap_rows
- *
- * Change the positions of two rows by swapping each of their values
- *
- * preconditions: row1 and row2 are valid indices of matrix
- *                nrows and ncols are the number of rows and columns in matrix
- *                matrix is an array of doubles
- * postcondition: the values for each column of row1 and row2 are swapped
- */
-void
-swap_rows (int row1, int row2, int nrows, int ncols, double matrix[nrows][ncols])
-{
-    printf("swap R%d <--> R%d\n", row1+1, row2+1);
-    for (int j = 0; j < ncols; j++) {
-        double temp = matrix[row1][j];
-        matrix[row1][j] = matrix[row2][j];
-        matrix[row2][j] = temp;
-    }
-}
 
 /* scale_row
  *
@@ -294,5 +292,26 @@ scale_row (int row, double scalar, int nrows, int ncols, double matrix[nrows][nc
         for (int j = 0; j < ncols; j++) {
             matrix[row][j] = matrix[row][j] * scalar;
         }
+    }
+}
+
+
+/* swap_rows
+ *
+ * Change the positions of two rows by swapping each of their values
+ *
+ * preconditions: row1 and row2 are valid indices of matrix
+ *                nrows and ncols are the number of rows and columns in matrix
+ *                matrix is an array of doubles
+ * postcondition: the values for each column of row1 and row2 are swapped
+ */
+void
+swap_rows (int row1, int row2, int nrows, int ncols, double matrix[nrows][ncols])
+{
+    printf("swap R%d <--> R%d\n", row1+1, row2+1);
+    for (int j = 0; j < ncols; j++) {
+        double temp = matrix[row1][j];
+        matrix[row1][j] = matrix[row2][j];
+        matrix[row2][j] = temp;
     }
 }
