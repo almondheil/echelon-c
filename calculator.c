@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include "user_io.h"
 #include "matrix_proc.h"
 
@@ -10,14 +11,12 @@
  *
  * precondition:  nrows and ncols are the number of rows and columns in the matrix
  *                matrix is an nrows x ncols array of doubles
- * postcondition: matrix will end up in echelon form
+ * postcondition: matrix will end up in echelon form, returns success
  */
-void
+bool
 echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
 {
-    printf("initial state of matrix\n");
-    print_matrix(nrows, ncols, matrix);
-
+    bool success = false;
     int last_leading = -1; /* start off with an invalid leading pos */
 
     /* Go from a matrix to its echelon form */
@@ -33,6 +32,7 @@ echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
                 if (k_leading < current_leading) {
                     printf("swap R%d <--> R%d\n", i+1, k+1);
                     swap_rows(i, k, nrows, ncols, matrix);
+                    print_matrix(nrows, ncols, matrix);
                     current_leading = k_leading;
                     // stop if we get a perfect match early
                     if (k_leading == desired_leading)
@@ -47,7 +47,7 @@ echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
             continue; // if no leading value, we better not try more stuff
         } else if (current_leading < last_leading) {
             fprintf(stderr, "Could not find a row to swap with.\n");
-            exit(EXIT_FAILURE);
+            return success;
         }
 
         /* Now, try to scale the row so that the leading value is 1 */
@@ -61,12 +61,14 @@ echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
         /* Use the newly scaled problem to cancel out that position elsewhere */
         for (int k = i+1; k < nrows; k++) {
             double temp = -1 * matrix[k][current_leading];
-            add_scaled(k, i, temp, nrows, ncols, matrix);
             printf("add R%d + (%.2lf * R%d)\n", k+1, temp, i+1);
+            add_scaled(k, i, temp, nrows, ncols, matrix);
             print_matrix(nrows, ncols, matrix);
         }
         last_leading = current_leading; // Update the most recent leading position
     }
+    success = true;
+    return success;
 }
 
 /* reduced_echelon_form
@@ -78,8 +80,10 @@ echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
  *                matrix is an array of doubles
  * postcondition: matrix will end up in reduced echelon form
  */
-void reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
+bool
+reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
 {
+    bool success = false;
     /* Cancel out what you can in all the rows above */
     for (int i = nrows-1; i >= 0; i--) {
         /* Make sure the row has a leading value and find what it is */
@@ -98,5 +102,7 @@ void reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
             }
         }
     }
+    success = true;
+    return success;
 }
 

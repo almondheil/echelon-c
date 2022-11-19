@@ -36,9 +36,10 @@ print_matrix (int nrows, int ncols, double matrix[nrows][ncols])
  *                matrix is a 2d array of doubles of that size
  * postcondition: matrix will have user values added to it
  */
-void
+bool
 read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols])
 {
+    bool success = false;
     int num_read;
 
     printf("Next, enter the matrix. Put spaces between columns,\n"
@@ -53,7 +54,7 @@ read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols])
             num_read = scanf("%lf", &matrix[i][j]);
             if (num_read == 0) {
                 printf("Could not read a value.\n");
-                exit(EXIT_FAILURE);
+                return success;
             }
         }
     }
@@ -61,6 +62,8 @@ read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols])
         ;
 
     printf("\n"); // formatting before we go into the calculations
+    success = true;
+    return success;
 }
 
 /* read_size_stdin
@@ -72,9 +75,10 @@ read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols])
  * postcondition: the number of rows and cols the user inputs will be
  *                stored in *nrows and *ncols
  */
-void
+bool
 read_size_stdin (int * nrows, int * ncols)
 {
+    bool success = false;
     int num_read;
 
     printf("This program will calculate the echelon form\n"
@@ -85,14 +89,17 @@ read_size_stdin (int * nrows, int * ncols)
     num_read = scanf("%d", nrows);
     if (num_read == 0) {
         fprintf(stderr, "Failed to read number of rows. Make sure it was an integer.\n");
-        exit(EXIT_FAILURE);
+        return success;
     }
 
     printf("Number of columns? ");
     num_read = scanf("%d", ncols);
     if (num_read == 0) {
         fprintf(stderr, "Failed to read number of rows. Make sure it was an integer.\n");
-        exit(EXIT_FAILURE);
+        return success;
     }
+
+    success = true;
+    return success;
 }
 

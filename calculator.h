@@ -3,12 +3,12 @@
 
 /* preconditions: nrows and ncols are the dimensions of matrix
  *                matrix is an array of doubles
- * postcondition: matrix will be in echelon form */
-void echelon_form (int nrows, int ncols, double matrix[nrows][ncols]);
+ * postcondition: returns exit status--if true, in echelon form. */
+bool echelon_form (int nrows, int ncols, double matrix[nrows][ncols]);
 
 /* preconditions: nrows and ncols are the dimensions of matrix
  *                matrix is an array of doubles
- * postcondition: matrix will be in echelon form */
-void reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols]);
+ * postcondition: returns exit status--if true, in reduced echelon form */
+bool reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols]);
 
 #endif

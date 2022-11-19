@@ -23,8 +23,6 @@
 #include "calculator.h"  // ref and rref calculations
 #include "user_io.h"     // matrix reading and printing
 
-bool auto_accept = false;
-
 /* main
  *
  * Prompt the user to enter a matrix and perform reduced echelon
@@ -37,6 +35,9 @@ bool auto_accept = false;
 int 
 main (int argc, char * argv[])
 {
+    bool auto_accept = false;
+    bool success;
+
     /* Parse arguments */
     for (int i = 0; i < argc; i++) {
         if (argv[i][0] == '-') {
@@ -56,28 +57,46 @@ main (int argc, char * argv[])
 
     /* Ask for matrix size, create it, and ask to read values */
     int nrows, ncols;
-    read_size_stdin(&nrows, &ncols);
+    success = read_size_stdin(&nrows, &ncols);
+    if (!success) {
+        fprintf(stderr, "Error encountered while reading matrix size\n");
+        return EXIT_FAILURE;
+    }
     double matrix[nrows][ncols];
-    read_matrix_stdin(nrows, ncols, matrix);
+    success = read_matrix_stdin(nrows, ncols, matrix);
+    if (!success) {
+        fprintf(stderr, "Error encountered while reading matrix values\n");
+        return EXIT_FAILURE;
+    }
 
     /* Do the first part of the calculation, then prompt whether
      * they want to do the rest (unless they ran with -y)
      */
-    echelon_form(nrows, ncols, matrix);
+    printf("inital state\n");
+    print_matrix(nrows, ncols, matrix);
+    success = echelon_form(nrows, ncols, matrix);
+    if (!success) {
+        fprintf(stderr, "Error encountered in the echelon form. Exiting...\n");
+        return EXIT_FAILURE;
+    }
 
     if (!auto_accept) {
         printf("Echelon form calculation completed.\n"
                 "Want to go to the reduced echelon form? [Y/n]: ");
         char ch = tolower(getchar());
-        if (ch != 'n') {
-            printf("\n");
-            reduced_echelon_form(nrows, ncols, matrix);
-            printf("Reduced echelon form calculation completed.\n");
+        if (ch == 'n') {
+            printf("\nProgram completed!\n");
+            return EXIT_SUCCESS;
         }
-    } else {
-        reduced_echelon_form(nrows, ncols, matrix);
-        printf("Reduced echelon form calculation completed.\n");
     }
+
+    // implicit else for auto_accept and ch == 'n'
+    success = reduced_echelon_form(nrows, ncols, matrix);
+    if (!success) {
+        fprintf(stderr, "Error encountered in reduced echelon form. Exiting...\n");
+        return EXIT_FAILURE;
+    }
+    printf("Reduced echelon form calculation completed.\n");
 
     // Okay, we're good! Exit with no errors.
     return EXIT_SUCCESS;
