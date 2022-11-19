@@ -29,10 +29,8 @@
  * Function Declarations (by usage)                                           *
  ******************************************************************************/
 
-/* reading values from files and stdin */
-void read_matrix_file (char * fname, int nrows, int ncols, double matrix[nrows][ncols]);
+/* reading values from stdin */
 void read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols]);
-void read_size_file (char * fname, int * nrows, int * ncols);
 void read_size_stdin (int * nrows, int * ncols);
 
 /* elementary row operations */
@@ -52,9 +50,7 @@ void print_matrix (int nrows, int ncols, double matrix[nrows][ncols]);
  * Function Definitions (main, then alphabetical)                             *
  ******************************************************************************/
 
-bool auto_accept = false;      // do not prompt for reduced echelon form
-bool from_file = false;        // read from a file
-char target_file[MAXSTRLEN+1]; // filename we want to read from
+bool auto_accept = false;
 
 /* main
  *
@@ -76,15 +72,6 @@ main (int argc, char * argv[])
                     case 'y': 
                         auto_accept = true;
                         break;
-                    case 'f':
-                        from_file = true;
-                        // If a filename is not provided yell at them
-                        if (i == argc-1 || argv[i+1][0] == '-') {
-                            fprintf(stderr, "Usage: %s -f <filename>\n", argv[0]);
-                            return EXIT_FAILURE;
-                        }
-                        strncpy(target_file, argv[i+1], MAXSTRLEN);
-                        break;
                     default:
                         fprintf(stderr, "Unknown option: -%c\n", argv[i][j]);
                         return EXIT_FAILURE;
@@ -94,15 +81,10 @@ main (int argc, char * argv[])
         } // if argv[i][0]
     } // for i < argc
 
+    /* Ask for matrix size, create it, and ask to read values */
     int nrows, ncols;
-
-    /* TODO later, we will read size from file too */
     read_size_stdin(&nrows, &ncols);
-
-    /* Create a matrix with that many rows and columns */
     double matrix[nrows][ncols];
-
-    /* TODO later, we will read matrix from file too */
     read_matrix_stdin(nrows, ncols, matrix);
 
     /* Do the first part of the calculation, then prompt whether
@@ -261,22 +243,6 @@ print_matrix (int nrows, int ncols, double matrix[nrows][ncols])
 }
 
 
-/* read_matrix_file
- *
- * Read the values of an initialized matrix from a file.
- *
- * preconditions: fname is the name of a local file
- *                nrows and ncols represent the size of matrix
- *                matrix is a 2d array of doubles of that size
- * postcondition: matrix will have values from the file added to it
- */
-void
-read_matrix_file (char * fname, int nrows, int ncols, double matrix[nrows][ncols])
-{
-    printf("Function read_matrix_file not yet implemented.\n");
-}
-
-
 /* read_matrix_stdin
  *
  * Read the values of an initialized matrix from stdin.
@@ -310,56 +276,6 @@ read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols])
         ;
 
     printf("\n"); // formatting before we go into the calculations
-}
-
-
-/* read_size_file 
- *
- * Given the name of a text file, attempt to read how many rows and columns are
- * in the matrix it contains.
- *
- * preconditions: *nrows and *ncols are pointers to integers
- *                fname is the name of a local file
- * postcondition: the number of rows and cols in the file will be stored 
- *                to *nrows and *ncols
- */
-void
-read_size_file (char * fname, int * nrows, int * ncols)
-{
-    printf("Function read_size_file is not implemented yet.\n");
-    return; // remove this when you're ready to deal with the rest
-
-    /* Try to open the file, make sure we were able to */
-    FILE * file = fopen(fname, "r");
-    if (file == NULL) {
-        fprintf(stderr, "Error opening file %s: %s\n", fname, strerror(errno));
-        exit(EXIT_FAILURE);
-    }
-
-    /* Make sure to initialize them at zero. We're counting! */
-    *nrows = 0;
-    *ncols = 0;
-
-
-    char curr = 0; // current and last scanned chars
-    char last = 0;
-
-    /* Read until the end of the file */
-    char ch;
-    while ((ch = fgetc(file)) != EOF) {
-        /* Every number or space followed by a newline is a new row */
-        if (ch == '\n' && (isdigit(last) || isspace(last)))
-            *nrows++;
-        /* Every number followed by a space is a new col */
-        if (isspace(ch) && isdigit(last))
-            *ncols++;
-    }
-
-    /* Close the file again. All done! */
-    if (fclose(file)) {
-        fprintf(stderr, "Error closing file %s: %s\n", fname, strerror(errno));
-        exit(EXIT_FAILURE);
-    }
 }
 
 
