@@ -1,13 +1,2 @@
-# Ignore all 
-*
-
-# Unignore anything with an extension
-!*.*
-
-# Unignore directories
-!/
-
-### Above combination ignores all files without extensions (like the executable)
-
 # Ignore vim's swap files
 *.swp

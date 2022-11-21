@@ -47,4 +47,4 @@ matrix_proc.o: matrix_proc.c matrix_proc.h
 	$(CC) $(CFLAGS) -c $<
 
 clean:
-	rm -f *.o *~ core*
+	rm -f echelon *.o *~ core*
