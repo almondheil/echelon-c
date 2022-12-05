@@ -31,13 +31,16 @@ CFLAGS = -ansi -g -Wall -std=gnu99
 
 all: echelon
 
-echelon: echelon.o calculator.o user_io.o matrix_proc.o
+echelon: echelon.o automatic.o manual.o user_io.o matrix_proc.o
 	$(CC) -o $@ $^
 
-echelon.o: echelon.c calculator.h user_io.h 
+echelon.o: echelon.c automatic.h user_io.h 
 	$(CC) $(CFLAGS) -c $<
 
-calculator.o: calculator.c calculator.h matrix_proc.h user_io.h
+automatic.o: automatic.c automatic.h matrix_proc.h user_io.h
+	$(CC) $(CFLAGS) -c $<
+
+manual.o: manual.c manual.h matrix_proc.h user_io.h
 	$(CC) $(CFLAGS) -c $<
 
 user_io.o: user_io.c user_io.h

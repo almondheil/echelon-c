@@ -14,7 +14,7 @@
  * postcondition: matrix will end up in echelon form, returns success
  */
 bool
-echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
+auto_echelon (int nrows, int ncols, double matrix[nrows][ncols])
 {
     bool success = false;
     int last_leading = -1; /* start off with an invalid leading pos */
@@ -76,12 +76,12 @@ echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
  * Given a matrix in echelon form, reduce it by cancelling out 
  * values above where possible.
  *
- * preconditions: nrows and ncols are the number of rows and columns in matrix
- *                matrix is an array of doubles
+ * preconditions: nrows and ncols are the dimensions of matrix 
+ *                matrix is an array of doubles already in echelon form
  * postcondition: matrix will end up in reduced echelon form
  */
 bool
-reduced_echelon_form (int nrows, int ncols, double matrix[nrows][ncols])
+auto_reduced_echelon (int nrows, int ncols, double matrix[nrows][ncols])
 {
     bool success = false;
     /* Cancel out what you can in all the rows above */
