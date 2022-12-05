@@ -21,7 +21,7 @@ print_matrix (int nrows, int ncols, double matrix[nrows][ncols])
             if (matrix[i][j] == -0) {
                 matrix[i][j] = 0.0;
             }
-            printf("%5.2lf ", matrix[i][j]);
+            printf("%5.4lf ", matrix[i][j]);
         }
         printf("\n");
     }
