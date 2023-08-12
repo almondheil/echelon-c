@@ -29,9 +29,10 @@ CFLAGS = -ansi -g -Wall -std=gnu99
 # Compilation rules
 #------------------------------------------------------------------------------
 
+.PHONY: all
 all: echelon
 
-echelon: echelon.o automatic.o manual.o user_io.o matrix_proc.o
+echelon: src/echelon.o src/automatic.o src/manual.o src/user_io.o src/matrix_proc.o
 	$(CC) -o $@ $^
 
 echelon.o: echelon.c automatic.h user_io.h 
@@ -49,5 +50,6 @@ user_io.o: user_io.c user_io.h
 matrix_proc.o: matrix_proc.c matrix_proc.h
 	$(CC) $(CFLAGS) -c $<
 
+.PHONY: clean
 clean:
-	rm -f echelon *.o *~ core*
+	rm -f echelon src/*.o *~ core*

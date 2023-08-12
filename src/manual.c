@@ -40,6 +40,51 @@ int matrix_menu (int nrows, int ncols, double matrix[nrows][ncols])
 
 /* TODO NEED TO ALPHABETIZE EVERYTHING */
 
+/* scan_row
+ *
+ * Scan a row number into memory, making sure that is valid
+ *
+ * preconditions: rownum is a pointer to an int
+ *                nrows is the number of rows in the matrix
+ * postcondition: returns true if scan was successful, false otherwise */
+bool scan_row (int * rownum, int nrows)
+{
+    int scanned = scanf("%d", rownum);
+
+    while (getchar() != '\n')
+        ; // chomp remaining chars
+
+    if (scanned == 0) { // failed to scan anything
+        return false;
+    } else if (*rownum < 1 || *rownum > nrows) {
+        return false;
+    }
+
+    return true;
+}
+
+/* scan_scalar
+ *
+ * Prompt for a fraction, calculate the decimal version, and add that to memory.
+ *
+ * preconditions: scalar is a pointer to a double
+ * postcondition: returns true if scan was successful, false otherwise */
+bool scan_scalar (double * scalar)
+{
+    int num, den; // numerator and denominator of function
+    int scanned = scanf("%d/%d", &num, &den);
+    if (scanned != 2) {
+        return false;
+    }
+    *scalar = num/den; // calculate double representation of that fraction
+    if (*scalar == 0) {
+        return false;
+    }
+
+    return true;
+}
+
+
 /* manual_scale
  *
  * Prompt the user to select a row to scale and what to scale
@@ -53,28 +98,20 @@ int manual_scale (int nrows, int ncols, double matrix[nrows][ncols])
 {
     int row;       // which row to scale
     double scalar; // what to scale it by
-    int scanned;   // number of items scanned (validation)
     
     /* Find which row to scale, with error checking */
     printf("Now scaling a row.\n"
            "Enter the number of a row (starting at 1), or 0 to cancel: ");
-    scanned = scanf("%d", &row);
-    if (scanned == 0) {
-        printf("Could not scan the row. Please try again.\n");
-        return 1;
-    } else if (row < 1 || row > nrows) {
-        printf("Row %d does not exist on the matrix.\n", row);
+    if (!scan_row(&row, nrows)) {
+        printf("Error scanning the row.\n");
         return 1;
     }
 
     /* Find what to scale it by, with error checking */
-    printf("Enter the scalar (as a decimal): ");
-    scanned = scanf("%lf", &scalar);
-    if (scanned == 0) {
-        printf("Could not scan the scale factor. Please try again.\n");
+    printf("Enter the scalar (as a fraction like -1/3): ");
+    if (!scan_scalar(&scalar)) {
+        printf("Error scanning the scalar.\n");
         return 1;
-    } else if (scalar == 0) {
-        printf("Scaling a row by 0 is not allowed.\n");
     }
 
     /* If we passed all those checks, it's time to scale */
@@ -96,38 +133,25 @@ int manual_add_scaled (int nrows, int ncols, double matrix[nrows][ncols])
     int row1;      // the row that will be changed
     int row2;      // the row to add to it
     double scalar; // the scalar to multiply by
-    int scanned;   // the number of arguments scanned (validation)
     printf("Now adding a scalar multiple of one row to another.\n");
 
     /* get the values for row1 and row2 */
     printf("Enter the number of the first row (the one that will be added to): ");
-    scanned = scanf("%d", &row1);
-    if (scanned == 0) {
-        printf("Could not scan the row. Please try again.\n");
-        return 1;
-    } else if (row1 < 1 || row1 > nrows) {
-        printf("Row %d does not exist on the matrix.\n", row1);
+    if (!scan_row(&row1, nrows)) {
+        printf("Could not scan the row.\n");
         return 1;
     }
     printf("Now, enter the number of the second row (the one that will be scaled): ");
-    scanned = scanf("%d", &row2);
-    if (scanned == 0) {
-        printf("Could not scan the row. Please try again.\n");
-        return 1;
-    } else if (row2 < 1 || row2 > nrows) {
-        printf("Row %d does not exist on the matrix.\n", row1);
+    if (!scan_row(&row2, nrows)) {
+        printf("Could not scan the row.\n");
         return 1;
     }
 
     /* get the value for scalar */
-    printf("Finally, enter the scale factor: ");
-    scanned = scanf("%lf", &scalar);
-    if (scanned == 0) {
-        printf("Could not scan the scale factor. Please try again.\n");
+    printf("Finally, enter the scalar (as a fraction, like 4/1): ");
+    if (!scan_scalar(&scalar)) {
+        printf("Could bot scan the scalar.\n");
         return 1;
-    } else if (scalar == 0) {
-        printf("A scalar of zero is pointless\n");
-        return 0; // not actually an error, just no extra work to do
     }
 
     /* by now all our values are good, so we do the function. */
