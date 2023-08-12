@@ -1,8 +1,8 @@
 #------------------------------------------------------------------------------
 # File:         Makefile
 # Author:       Ray Heil
-# Created:      19 Nov 2022
-# Last revised: 19 Nov 2022
+# Created:      2022-11-09 
+# Last revised: 2023-08-12 
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
@@ -32,10 +32,10 @@ CFLAGS = -ansi -g -Wall -std=gnu99
 .PHONY: all
 all: echelon
 
-echelon: src/echelon.o src/automatic.o src/manual.o src/user_io.o src/matrix_proc.o
+echelon: src/main.o src/automatic.o src/manual.o src/user_io.o src/matrix_proc.o
 	$(CC) -o $@ $^
 
-echelon.o: echelon.c automatic.h user_io.h 
+main.o: main.c automatic.h user_io.h 
 	$(CC) $(CFLAGS) -c $<
 
 automatic.o: automatic.c automatic.h matrix_proc.h user_io.h
