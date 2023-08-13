@@ -4,45 +4,41 @@
 #include "matrix_proc.h"  // actual row operations
 #include "manual.h"
 
-int matrix_menu (int nrows, int ncols, double matrix[nrows][ncols])
-{
-    int status = -1; 
-    printf("Current matrix state:\n");
-    print_matrix(nrows, ncols, matrix);
-    printf("What action to do?\n"
+// TODO: This whole file is a mess, and needs to be reworked.
+// That's not a project for the moment
+
+int matrix_menu (void) {
+    printf("What action to perform?\n"
            "  S - swap two rows\n"
            "  A - add a scaled version of one row to another\n"
            "  M - multiply a row by a scalar\n"
            "  Q - quit\n");
 
-    char ch = getchar();
+    char ch;
+    while (true) { // loop exits on any successful choice
+        ch = getchar();
 
-    while (getchar() != '\n')
-        ; // chomp any remaining characters
+        while (getchar() != '\n')
+            ; // chomp any remaining characters
 
-    switch (tolower(ch)) {
-        case 's': // swap
-            status = manual_swap(nrows, ncols, matrix);
-            return status;
-        case 'a': // add
-            status = manual_add_scaled(nrows, ncols, matrix);
-            return status;
-        case 'm': // multiply
-            status = manual_scale(nrows, ncols, matrix);
-            return status;
-        case 'q': // quit
-            return status; // status of -1 is exit
-        default:
-            printf("Unrecognized option.\n");
-            return 1;
+        switch (tolower(ch)) {
+            case 's': // swap
+                return 0;
+            case 'a': // add
+                return 1;
+            case 'm': // multiply
+                return 2;
+            case 'q': // quit
+                return 3;
+        }
+
+        printf("Unrecognized option %c. Please try again.\n", ch);
     }
 }
 
 /* TODO NEED TO ALPHABETIZE EVERYTHING */
 
-/* scan_row
- *
- * Scan a row number into memory, making sure that is valid
+/* Scan a row number into memory, making sure that is valid
  *
  * pre: rownum is a pointer to an int
  *                nrows is the number of rows in the matrix

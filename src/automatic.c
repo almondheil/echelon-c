@@ -4,8 +4,7 @@
 #include "user_io.h"
 #include "matrix_proc.h"
 
-bool auto_echelon (int nrows, int ncols, double matrix[nrows][ncols])
-{
+bool auto_echelon (int nrows, int ncols, double matrix[nrows][ncols]) {
     bool success = false;
     int last_leading = -1; /* start off with an invalid leading pos */
 
@@ -61,8 +60,7 @@ bool auto_echelon (int nrows, int ncols, double matrix[nrows][ncols])
     return success;
 }
 
-bool auto_reduced_echelon (int nrows, int ncols, double matrix[nrows][ncols])
-{
+bool auto_reduced_echelon (int nrows, int ncols, double matrix[nrows][ncols]) {
     bool success = false;
     /* Cancel out what you can in all the rows above */
     for (int i = nrows-1; i >= 0; i--) {

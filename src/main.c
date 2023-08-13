@@ -26,12 +26,10 @@
 /* Prompt the user to enter a matrix and perform reduced echelon
  * calculations on it, printing out the results as you go.
  *
- * pre: arg is number of arguments
- *                argv is a char * array of arguments
- * post: returns exit status (0 on success)
+ * pre:  none, the launching shell will deal with it
+ * post: nonzero exit status indicates failure 
  */
-int main (int argc, char * argv[])
-{
+int main (int argc, char * argv[]) {
     bool manual = false;
     bool success;
 
