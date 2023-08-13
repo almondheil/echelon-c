@@ -103,17 +103,7 @@ int main (int argc, char * argv[]) {
             return EXIT_FAILURE;
         }
         printf("Reduced echelon form calculation completed.\n");
-    } else {
-        /* manual row calculations (must be enabled with -m flag) */
-        int status;
-        do {
-            status = matrix_menu(nrows, ncols, matrix);
-        } while (status != -1);
-
-        // Print exiting messages. Woo!
-        printf("Final state of matrix:\n");
-        print_matrix(nrows, ncols, matrix);
-    }
+    } 
 
     // Okay, we're good! Exit with no errors.
     return EXIT_SUCCESS;
