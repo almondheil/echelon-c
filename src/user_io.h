@@ -3,20 +3,26 @@
 
 #include <stdbool.h>
 
-/* preconditions: nrows and ncols are dimensions of the matrix
- *                matrix is an array of doubles
- * postcondition: matrix will be filled with values from stdin */
+/* Initialize a matrix from stdin.
+ *
+ * pre:  none
+ * post: reads values from stdin into matrix
+ */
 bool read_matrix_stdin (int nrows, int ncols,
 		       double matrix[nrows][ncols]);
 
-/* preconditions: nrows and ncols are pointers to integers
- * postcondition: nrows and ncols will have integers read into them */
-bool read_size_stdin (int * nrows, int * ncols);
+/* Read the dimensions of an array from stdin.
+ *
+ * pre:  none 
+ * post: nrows and ncols will reflect the user's input
+ */
+bool read_size_stdin (int* nrows, int* ncols);
 
-/* preconditions: nrows and ncols are dimensions of the matrix
- *                matrix is an array of doubles
- * postcondition: matrix will be printed out to stdout */
-void print_matrix (int nrows, int ncols,
-		  double matrix[nrows][ncols]);
+/* Print a matrix.
+ *
+ * pre:  matrix is initialized
+ * post: none
+ */
+void print_matrix (int nrows, int ncols, double matrix[nrows][ncols]);
 
 #endif

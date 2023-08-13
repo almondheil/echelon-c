@@ -4,17 +4,7 @@
 #include "user_io.h"
 #include "matrix_proc.h"
 
-/* echelon_form
- *
- * Put a matrix into echelon form. Modifies the original matrix, 
- * so maybe you want to make a copy!
- *
- * precondition:  nrows and ncols are the number of rows and columns in the matrix
- *                matrix is an nrows x ncols array of doubles
- * postcondition: matrix will end up in echelon form, returns success
- */
-bool
-auto_echelon (int nrows, int ncols, double matrix[nrows][ncols])
+bool auto_echelon (int nrows, int ncols, double matrix[nrows][ncols])
 {
     bool success = false;
     int last_leading = -1; /* start off with an invalid leading pos */
@@ -71,17 +61,7 @@ auto_echelon (int nrows, int ncols, double matrix[nrows][ncols])
     return success;
 }
 
-/* reduced_echelon_form
- *
- * Given a matrix in echelon form, reduce it by cancelling out 
- * values above where possible.
- *
- * preconditions: nrows and ncols are the dimensions of matrix 
- *                matrix is an array of doubles already in echelon form
- * postcondition: matrix will end up in reduced echelon form
- */
-bool
-auto_reduced_echelon (int nrows, int ncols, double matrix[nrows][ncols])
+bool auto_reduced_echelon (int nrows, int ncols, double matrix[nrows][ncols])
 {
     bool success = false;
     /* Cancel out what you can in all the rows above */

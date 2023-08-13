@@ -2,16 +2,7 @@
 #include <stdlib.h>
 #include "user_io.h"
 
-/* print_matrix
- *
- * Display a matrix by printing out the values.
- *
- * precondition:  nrows and ncols are the number of rows and columns in the matrix
- *                matrix is an nrows x ncols array of doubles
- * postcondition: none, matrix is just printed out.
- */
-void 
-print_matrix (int nrows, int ncols, double matrix[nrows][ncols])
+void print_matrix (int nrows, int ncols, double matrix[nrows][ncols])
 {
     for (int i = 0; i < ncols+2; i++)
         printf("*****");
@@ -28,16 +19,7 @@ print_matrix (int nrows, int ncols, double matrix[nrows][ncols])
     printf("\n");
 }
 
-/* read_matrix_stdin
- *
- * Read the values of an initialized matrix from stdin.
- *
- * preconditions: nrows and ncols represent the size of matrix
- *                matrix is a 2d array of doubles of that size
- * postcondition: matrix will have user values added to it
- */
-bool
-read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols])
+bool read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols])
 {
     bool success = false;
     int num_read;
@@ -66,17 +48,7 @@ read_matrix_stdin (int nrows, int ncols, double matrix[nrows][ncols])
     return success;
 }
 
-/* read_size_stdin
- *
- * Prompt the user for how many rows and columns are in their matrix,
- * and copy this to variables
- *
- * preconditions: *nrows and *ncols are pointers to integers
- * postcondition: the number of rows and cols the user inputs will be
- *                stored in *nrows and *ncols
- */
-bool
-read_size_stdin (int * nrows, int * ncols)
+bool read_size_stdin (int * nrows, int * ncols)
 {
     bool success = false;
     int num_read;

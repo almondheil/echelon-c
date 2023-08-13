@@ -1,6 +1,5 @@
-/*
- * echelon.c - Matrix echelon form calculator
- * Copyright (C) 2022 Ray Heil
+/* echelon.c - Matrix echelon form calculator
+ * Copyright (C) 2022 Almond Heil
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,17 +23,14 @@
 #include "manual.h"     // allow the user to do their own calculations
 #include "user_io.h"    // matrix reading and printing
 
-/* main
- *
- * Prompt the user to enter a matrix and perform reduced echelon
+/* Prompt the user to enter a matrix and perform reduced echelon
  * calculations on it, printing out the results as you go.
  *
- * preconditions: arg is number of arguments
+ * pre: arg is number of arguments
  *                argv is a char * array of arguments
- * postcondition: returns exit status (0 on success)
+ * post: returns exit status (0 on success)
  */
-int 
-main (int argc, char * argv[])
+int main (int argc, char * argv[])
 {
     bool manual = false;
     bool success;

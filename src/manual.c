@@ -44,9 +44,9 @@ int matrix_menu (int nrows, int ncols, double matrix[nrows][ncols])
  *
  * Scan a row number into memory, making sure that is valid
  *
- * preconditions: rownum is a pointer to an int
+ * pre: rownum is a pointer to an int
  *                nrows is the number of rows in the matrix
- * postcondition: returns true if scan was successful, false otherwise */
+ * post: returns true if scan was successful, false otherwise */
 bool scan_row (int * rownum, int nrows)
 {
     int scanned = scanf("%d", rownum);
@@ -67,8 +67,8 @@ bool scan_row (int * rownum, int nrows)
  *
  * Prompt for a fraction, calculate the decimal version, and add that to memory.
  *
- * preconditions: scalar is a pointer to a double
- * postcondition: returns true if scan was successful, false otherwise */
+ * pre: scalar is a pointer to a double
+ * post: returns true if scan was successful, false otherwise */
 bool scan_scalar (double * scalar)
 {
     int num, den; // numerator and denominator of function
@@ -91,9 +91,9 @@ bool scan_scalar (double * scalar)
  * it by. 
  * Return 0 on success, 1 on failure.
  *
- * preconditions: nrows and ncols are dimensions of matrix
+ * pre: nrows and ncols are dimensions of matrix
  *                matrix is an array of doubles
- * postcondition: returns 0 on success, 1 on failure */
+ * post: returns 0 on success, 1 on failure */
 int manual_scale (int nrows, int ncols, double matrix[nrows][ncols])
 {
     int row;       // which row to scale
@@ -125,9 +125,9 @@ int manual_scale (int nrows, int ncols, double matrix[nrows][ncols])
  * of one to the other.
  * Return 0 on success, 1 on failure.
  *
- * preconditions: nrows and ncols are dimensions of matrix
+ * pre: nrows and ncols are dimensions of matrix
  *                matrix is an array of doubles
- * postcondition: returns 0 on success, 1 on failure */
+ * post: returns 0 on success, 1 on failure */
 int manual_add_scaled (int nrows, int ncols, double matrix[nrows][ncols])
 {
     int row1;      // the row that will be changed
@@ -164,9 +164,9 @@ int manual_add_scaled (int nrows, int ncols, double matrix[nrows][ncols])
  * Prompt the user to select two rows to swap with each other
  * Return 0 on success, 1 on failure.
  *
- * preconditions: nrows and ncols are dimensions of matrix
+ * pre: nrows and ncols are dimensions of matrix
  *                matrix is an array of doubles
- * postcondition: returns 0 on success, 1 on failure */
+ * post: returns 0 on success, 1 on failure */
 int manual_swap (int nrows, int ncols, double matrix[nrows][ncols])
 {
     int row1;      // the two rows we swap 

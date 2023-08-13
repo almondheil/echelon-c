@@ -3,14 +3,19 @@
 
 #include <stdbool.h>
 
-/* preconditions: nrows and ncols are the dimensions of matrix
- *                matrix is an array of doubles
- * postcondition: returns exit status--if true, in echelon form. */
+/* Put a matrix into echelon form. Overwrites data.
+ *
+ * pre:  matrix is initialized 
+ * post: returns true if reached echelon form, false otherwise
+ */
 bool auto_echelon (int nrows, int ncols, double matrix[nrows][ncols]);
 
-/* preconditions: nrows and ncols are the dimensions of matrix
- *                matrix is an array of doubles
- * postcondition: returns exit status--if true, in reduced echelon form */
+/* Given a matrix in echelon form, reduce it by cancelling out 
+ * values above where possible.
+ *
+ * pre:  matrix is initialized and already in echelon form
+ * post: returns true if reached reduced echelon form, false otherwise
+ */
 bool auto_reduced_echelon (int nrows, int ncols, double matrix[nrows][ncols]);
 
 #endif
