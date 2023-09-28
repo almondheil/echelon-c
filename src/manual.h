@@ -18,7 +18,7 @@ int matrix_menu(void);
  * pre:  matrix is initialized
  * post: matrix will be modified such that row1 *= scalar
  */
-int manual_scale (int nrows, int ncols, double matrix[nrows][ncols]);
+void manual_scale (int nrows, int ncols, double matrix[nrows][ncols]);
 
 /* Manually prompt and validate input for adding a scaled version of one row
  * to another.
@@ -28,7 +28,7 @@ int manual_scale (int nrows, int ncols, double matrix[nrows][ncols]);
  * pre:  matrix is initialized
  * post: matrix will be modified such that row1 += (scalar * row2)
  */
-int manual_add_scaled (int nrows, int ncols, double matrix[nrows][ncols]);
+void manual_add_scaled (int nrows, int ncols, double matrix[nrows][ncols]);
 
 /* Manually prompt and validate input for swapping two rows.
  *
@@ -37,7 +37,6 @@ int manual_add_scaled (int nrows, int ncols, double matrix[nrows][ncols]);
  * pre:  matrix is initialized
  * post: matrix will be modified such that rows are swapped
  */
-int manual_swap (int nrows, int ncols, double matrix[nrows][ncols]);
-
+void manual_swap (int nrows, int ncols, double matrix[nrows][ncols]);
 
 #endif

@@ -1,4 +1,4 @@
-/* echelon.c - Matrix echelon form calculator
+/* main.c - Matrix echelon form calculator
  * Copyright (C) 2022 Almond Heil
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,20 @@
 #include "manual.h"     // allow the user to do their own calculations
 #include "user_io.h"    // matrix reading and printing
 
+/* Run in automatic mode on a matrix.
+ * 
+ * pre:  matrix is initialized
+ * post: returns 0 on success, nonzero on failure
+ */
+int automatic_mode(int nrows, int ncols, double matrix[nrows][ncols]);
+
+/* Run in manual ode on a matrix.
+ * 
+ * pre:  matrix is initialized
+ * post: returns 0 on success, nonzero on failure
+ */
+int manual_mode(int nrows, int ncols, double matrix[nrows][ncols]);
+
 /* Prompt the user to enter a matrix and perform reduced echelon
  * calculations on it, printing out the results as you go.
  *
@@ -30,8 +44,9 @@
  * post: nonzero exit status indicates failure 
  */
 int main (int argc, char * argv[]) {
-    bool manual = false;
-    bool success;
+    bool manual = false; // manual mode?
+    bool success;        // operation success
+    int ret;             // program return status
 
     /* Parse arguments */
     for (int i = 0; i < argc; i++) {
@@ -75,36 +90,63 @@ int main (int argc, char * argv[]) {
         return EXIT_FAILURE;
     }
 
-    /* Do the first part of the calculation, then prompt whether
-     * they want to do the rest (unless they ran with -y)
-     */
-    if (!manual) {
-        /* automatic echelon calculation (default) */
-        printf("inital state\n");
-        print_matrix(nrows, ncols, matrix);
-        success = auto_echelon(nrows, ncols, matrix);
-        if (!success) {
-            fprintf(stderr, "Error encountered in the echelon form. Exiting...\n");
-            return EXIT_FAILURE;
-        }
+    // Run either in manual or automatic mode
+    if (manual)
+        ret = manual_mode(nrows, ncols, matrix);
+    else
+        ret = automatic_mode(nrows, ncols, matrix);
 
-        printf("Echelon form calculation completed.\n"
-               "Want to go to the reduced echelon form? [Y/n]: ");
-        char ch = tolower(getchar());
-        if (ch == 'n') {
-            printf("\nProgram completed!\n");
-            return EXIT_SUCCESS;
-        }
+    return ret;
+}
 
-        // implicit else for auto_accept and ch == 'n'
-        success = auto_reduced_echelon(nrows, ncols, matrix);
-        if (!success) {
-            fprintf(stderr, "Error encountered in reduced echelon form. Exiting...\n");
-            return EXIT_FAILURE;
-        }
-        printf("Reduced echelon form calculation completed.\n");
-    } 
+int automatic_mode(int nrows, int ncols, double matrix[nrows][ncols]) {
+    bool success;
+    printf("inital state\n");
+    print_matrix(nrows, ncols, matrix);
 
-    // Okay, we're good! Exit with no errors.
+    success = auto_echelon(nrows, ncols, matrix);
+    if (!success) {
+        fprintf(stderr, "Error encountered in the echelon form. Exiting...\n");
+        return EXIT_FAILURE;
+    }
+
+    printf("Echelon form calculation completed.\n"
+            "Want to go to the reduced echelon form? [Y/n]: ");
+    char ch = tolower(getchar());
+    if (ch == 'n') {
+        printf("\nProgram completed!\n");
+        return EXIT_SUCCESS;
+    }
+
+    // implicit else for auto_accept and ch == 'n'
+    success = auto_reduced_echelon(nrows, ncols, matrix);
+    if (!success) {
+        fprintf(stderr, "Error encountered in reduced echelon form. Exiting...\n");
+        return EXIT_FAILURE;
+    }
+    printf("Reduced echelon form calculation completed.\n");
+
     return EXIT_SUCCESS;
 }
+
+int manual_mode(int nrows, int ncols, double matrix[nrows][ncols]) {
+    int option;
+    do {
+        print_matrix(nrows, ncols, matrix);
+        option = matrix_menu();
+        switch (option) {
+            case 1: // swap rows
+                manual_swap(nrows, ncols, matrix);
+                break;
+            case 2: // add rows (with scalar)
+                manual_add_scaled(nrows, ncols, matrix);
+                break;
+            case 3: // scale row
+                manual_scale(nrows, ncols, matrix);
+                break;
+        }
+    } while (option != 0);
+
+    return EXIT_SUCCESS;
+}
+

@@ -9,10 +9,10 @@
 
 int matrix_menu (void) {
     printf("What action to perform?\n"
-           "  S - swap two rows\n"
-           "  A - add a scaled version of one row to another\n"
-           "  M - multiply a row by a scalar\n"
-           "  Q - quit\n");
+           "  q - quit\n"
+           "  s - swap two rows\n"
+           "  a - add rows (optional scale)\n"
+           "  m - multiply a row by a scalar\n");
 
     char ch;
     while (true) { // loop exits on any successful choice
@@ -22,13 +22,13 @@ int matrix_menu (void) {
             ; // chomp any remaining characters
 
         switch (tolower(ch)) {
-            case 's': // swap
-                return 0;
-            case 'a': // add
-                return 1;
-            case 'm': // multiply
-                return 2;
             case 'q': // quit
+                return 0;
+            case 's': // swap
+                return 1;
+            case 'a': // add
+                return 2;
+            case 'm': // multiply
                 return 3;
         }
 
@@ -36,16 +36,16 @@ int matrix_menu (void) {
     }
 }
 
-/* TODO NEED TO ALPHABETIZE EVERYTHING */
-
-/* Scan a row number into memory, making sure that is valid
- *
- * pre: rownum is a pointer to an int
- *                nrows is the number of rows in the matrix
- * post: returns true if scan was successful, false otherwise */
+// This function is not included in manual.h, as I only use it in this file
 bool scan_row (int * rownum, int nrows)
 {
-    int scanned = scanf("%d", rownum);
+    int scanned;
+    do {
+        printf("Enter a row number, 0 to %d or -1 to cancel.");
+        scanned = scanf("%d", rownum);
+        // TODO NO, THIS IS ALL BAD. UGH.
+
+    } while (*rownum != -1);
 
     while (getchar() != '\n')
         ; // chomp remaining chars
@@ -59,12 +59,6 @@ bool scan_row (int * rownum, int nrows)
     return true;
 }
 
-/* scan_scalar
- *
- * Prompt for a fraction, calculate the decimal version, and add that to memory.
- *
- * pre: scalar is a pointer to a double
- * post: returns true if scan was successful, false otherwise */
 bool scan_scalar (double * scalar)
 {
     int num, den; // numerator and denominator of function
@@ -80,16 +74,6 @@ bool scan_scalar (double * scalar)
     return true;
 }
 
-
-/* manual_scale
- *
- * Prompt the user to select a row to scale and what to scale
- * it by. 
- * Return 0 on success, 1 on failure.
- *
- * pre: nrows and ncols are dimensions of matrix
- *                matrix is an array of doubles
- * post: returns 0 on success, 1 on failure */
 int manual_scale (int nrows, int ncols, double matrix[nrows][ncols])
 {
     int row;       // which row to scale
@@ -115,15 +99,6 @@ int manual_scale (int nrows, int ncols, double matrix[nrows][ncols])
     return 0;
 }
 
-/* manual_add_scaled
- *
- * Prompt the user to select a two rows and add a scaled version
- * of one to the other.
- * Return 0 on success, 1 on failure.
- *
- * pre: nrows and ncols are dimensions of matrix
- *                matrix is an array of doubles
- * post: returns 0 on success, 1 on failure */
 int manual_add_scaled (int nrows, int ncols, double matrix[nrows][ncols])
 {
     int row1;      // the row that will be changed
@@ -155,14 +130,6 @@ int manual_add_scaled (int nrows, int ncols, double matrix[nrows][ncols])
     return 0;
 }
 
-/* manual_swap
- *
- * Prompt the user to select two rows to swap with each other
- * Return 0 on success, 1 on failure.
- *
- * pre: nrows and ncols are dimensions of matrix
- *                matrix is an array of doubles
- * post: returns 0 on success, 1 on failure */
 int manual_swap (int nrows, int ncols, double matrix[nrows][ncols])
 {
     int row1;      // the two rows we swap 
