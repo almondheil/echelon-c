@@ -1,5 +1,5 @@
 /* main.c - Matrix echelon form calculator
- * Copyright (C) 2022 Almond Heil
+ * Copyright (C) 2022 almond heil
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
